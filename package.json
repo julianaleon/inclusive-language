@@ -1,0 +1,31 @@
+{
+  "name": "inclusive-language",
+  "version": "1.0.0",
+  "private": true,
+  "description": "An inclusive language GitHub App that helps you remove offensive language from your code.",
+  "author": "Juliana Leon <jewelsleon@gmail.com>",
+  "license": "ISC",
+  "repository": "https://github.com/julianaleon/inclusive-language.git",
+  "homepage": "https://github.com/julianaleon/inclusive-language",
+  "bugs": "https://github.com/julianaleon/inclusive-language/issues",
+  "keywords": [
+    "probot",
+    "github",
+    "probot-app"
+  ],
+  "scripts": {
+    "start": "probot run ./index.js",
+    "test": "jest"
+  },
+  "dependencies": {
+    "probot": "^10.1.0"
+  },
+  "devDependencies": {
+    "jest": "^26.4.0",
+    "nock": "^13.0.4",
+    "smee-client": "^1.1.0"
+  },
+  "engines": {
+    "node": ">= 10.13.0"
+  }
+}
