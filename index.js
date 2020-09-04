@@ -7,9 +7,16 @@ module.exports = app => {
   app.log.info('Yay, the app was loaded!')
 
   app.on('issues.opened', async context => {
+    app.log.info(context);
     const issueComment = context.issue({ body: 'Thanks for opening this issue!' })
     return context.github.issues.createComment(issueComment)
   })
+
+  app.on('pull_request.opened, pull_request.edited', async context => {
+      const prComment = context.pullRequest({ body: 'Responding to PR!' })
+      return context.github.pullRequest.createComment(prComment)
+  })
+
 
   // For more information on building apps:
   // https://probot.github.io/docs/
