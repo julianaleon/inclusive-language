@@ -13,8 +13,8 @@ module.exports = app => {
   })
 
   app.on('pull_request.opened, pull_request.edited', async context => {
-      const prComment = context.pullRequest({ body: 'Responding to PR!' })
-      return context.github.pullRequest.createComment(prComment)
+      const prComment = context.issue({ body: 'Responding to PR!' })
+      return context.github.issues.createComment(prComment)
   })
 
 
