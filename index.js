@@ -1,13 +1,21 @@
-const terms = require('./prohibittedTerms');
+const prohibittedTerms = require('./prohibittedTerms');
+const { Octokit } = require("@octokit/rest");
 /**
  * This is the main entrypoint to your Probot app
  * @param {import('probot').Application} app
  */
 module.exports = app => {
-  app.log.info('Yay, the app was loaded!')
+  app.log.info('App loaded!')
 
   const regex = RegExp('blacklist');
   var hasProhibittedTerm = false;
+
+  const octokit = new Octokit({
+      // auth: "secret123",
+      userAgent: 'be-inclusive'
+      // Needed for github enterprise
+      // baseUrl: 'https://api.github.com',
+  });
 
   app.on(['issues.opened', 'issues.edited'], async context => {
     app.log.info(context);
@@ -18,22 +26,26 @@ module.exports = app => {
   app.on(['pull_request.opened', 'pull_request.edited'], async context => {
         console.log(
 			context.payload.pull_request.body,
-			'****** what is going on ******',
+			'****** payload body ******',
 		);
 
     	const owner = context.payload.repository.owner.login;
     	const repo = context.payload.repository.name;
         const pull_number = context.payload.number;
 
-    	console.log(await context.pullRequests(), 'please work with await');
+    	// const files = await context.pullRequest().listFiles({
+    	// 	owner,
+    	// 	repo,
+        //     pull_number
+    	// });
 
-    	const files = await context.pullRequests().listFiles({
-    		owner,
-    		repo,
+        const files = await octokit.pulls.listFiles({
+            owner,
+            repo,
             pull_number
-    	});
+        });
 
-		console.log(files.data[0], '******* buuuuuuuum ******* ');
+		console.log(files.data[0], '******* File data ******* ');
 
         const checkCommit = files.data[0].patch.split('\n');
 		const onlyAddedLines = line => {
@@ -42,25 +54,25 @@ module.exports = app => {
 		const removeFirstPlus = line => {
 			return line.substring(1);
 		};
-		const extractBadWords = (ExtractedBadWordsArray, line) => {
-			for (const badWord of terms) {
-				if (line.includes(badWord)) {
-					ExtractedBadWordsArray.push({
-						word: badWord,
+		const extractTerms = (extractedTerms, line) => {
+			for (const term of prohibittedTerms) {
+				if (line.includes(term)) {
+					extractedTerms.push({
+						word: term,
 						line: line,
-						index: line.indexOf(badWord),
+						index: line.indexOf(term),
 						status: true,
-						count: ExtractedBadWordsArray.length,
+						count: extractedTerms.length
 					});
 				}
 			}
-			return ExtractedBadWordsArray;
+			return extractedTerms;
 		};
 
 		const result = checkCommit
 			.filter(onlyAddedLines)
 			.map(removeFirstPlus)
-			.reduce(extractBadWords, []);
+			.reduce(extractTerms, []);
 
 		const wordsFound = result.map(function(el) {
 			return el.word;
@@ -71,7 +83,7 @@ module.exports = app => {
 		});
 
 		const isUnfriendlyComment = context.issue({
-			body: `💔 This PR contains some non inclusive or unfriendly terms.
+			body: `This PR contains some problematic language.
 			The following words were found: ${wordsFound}
 			These words were found on the following lines: ${linesFound}`,
 		});
@@ -89,11 +101,4 @@ module.exports = app => {
       //     return context.github.issues.createComment(params);
       // }
   })
-
-
-  // For more information on building apps:
-  // https://probot.github.io/docs/
-
-  // To get your app running against GitHub, see:
-  // https://probot.github.io/docs/development/
 }
