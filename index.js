@@ -23,12 +23,14 @@ module.exports = app => {
 
     	const owner = context.payload.repository.owner.login;
     	const repo = context.payload.repository.name;
+        const pull_number = context.payload.number;
 
-    	console.log(await context.github.pullRequests, 'please work with await');
+    	console.log(await context.pullRequests(), 'please work with await');
 
-    	const files = await context.github.pullRequests.listFiles({
+    	const files = await context.pullRequests().listFiles({
     		owner,
     		repo,
+            pull_number
     	});
 
 		console.log(files.data[0], '******* buuuuuuuum ******* ');
