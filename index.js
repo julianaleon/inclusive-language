@@ -23,7 +23,7 @@ module.exports = app => {
     return context.github.issues.createComment(issueComment)
   })
 
-  app.on(['pull_request.opened', 'pull_request.edited'], async context => {
+  app.on(['pull_request.opened', 'pull_request.edited', 'pull_request.synchronize'], async context => {
         console.log(
 			context.payload.pull_request.body,
 			'****** payload body ******',
