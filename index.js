@@ -13,8 +13,8 @@ module.exports = app => {
   const octokit = new Octokit({
       // auth: "secret123",
       userAgent: 'be-inclusive'
-      // Needed for github enterprise
-      // baseUrl: 'https://api.github.com',
+      // Needed for GitHub Enterprise
+      // baseUrl: 'https://github.expedia.biz',
   });
 
   app.on(['issues.opened', 'issues.edited'], async context => {
@@ -24,37 +24,34 @@ module.exports = app => {
   })
 
   app.on(['pull_request.opened', 'pull_request.edited', 'pull_request.synchronize'], async context => {
-        console.log(
-			context.payload.pull_request.body,
-			'****** payload body ******',
-		);
+        // console.log(
+		// 	context.payload.pull_request.body,
+		// 	'****** payload body ******',
+		// );
 
     	const owner = context.payload.repository.owner.login;
     	const repo = context.payload.repository.name;
         const pull_number = context.payload.number;
 
-    	// const files = await context.pullRequest().listFiles({
-    	// 	owner,
-    	// 	repo,
-        //     pull_number
-    	// });
-
+        // Retrieve files from pull request
         const files = await octokit.pulls.listFiles({
             owner,
             repo,
             pull_number
         });
 
-		console.log(files.data[0], '******* File data ******* ');
+        const extractedTerms = [];
 
-        const checkCommit = files.data[0].patch.split('\n');
-		const onlyAddedLines = line => {
+        var checkCommit = index => {
+            return files.data[index].patch.split('\n');
+        }
+		var onlyAddedLines = line => {
 			return line.startsWith('+');
 		};
-		const removeFirstPlus = line => {
+		var removeFirstPlus = line => {
 			return line.substring(1);
 		};
-		const extractTerms = (extractedTerms, line) => {
+		var extractTermsFromFile = (extractedTerms, line) => {
 			for (const term of prohibittedTerms) {
 				if (line.includes(term)) {
 					extractedTerms.push({
@@ -66,29 +63,48 @@ module.exports = app => {
 					});
 				}
 			}
-			return extractedTerms;
+            return extractedTerms;
 		};
 
-		const result = checkCommit
-			.filter(onlyAddedLines)
-			.map(removeFirstPlus)
-			.reduce(extractTerms, []);
+        files.data.forEach((file, i) => {
+            console.log(
+                files.data[i],
+                '******** File',i,'data ********'
+            );
+            checkCommit(i)
+    			.filter(onlyAddedLines)
+    			.map(removeFirstPlus)
+    			.reduce(extractTermsFromFile, []);
+        });
 
-		const wordsFound = result.map(function(el) {
+        const wordsFound = extractedTerms.map(function(el) {
 			return el.word;
 		});
 
-		const linesFound = result.map(function(el) {
+		const linesFound = extractedTerms.map(function(el) {
 			return el.line;
 		});
 
+		// const result = checkCommit
+		// 	.filter(onlyAddedLines)
+		// 	.map(removeFirstPlus)
+		// 	.reduce(extractTerms, []);
+
+		// const wordsFound = result.map(function(el) {
+		// 	return el.word;
+		// });
+        //
+		// const linesFound = result.map(function(el) {
+		// 	return el.line;
+		// });
+
 		const isUnfriendlyComment = context.issue({
-			body: `This PR contains some problematic language.
-			The following words were found: ${wordsFound}
-			These words were found on the following lines: ${linesFound}`,
+			body: `This PR contains some words that are considered problematic language, maybe you could try using an alternative term instead for more inclusive language? [Here\'s why.](https://confluence.expedia.biz/pages/viewpage.action?pageId=1607388080)
+			The following terms were found: ${wordsFound}
+			These terms were found on the following lines: ${linesFound}`,
 		});
 
-		if (result[0].status) {
+		if (extractedTerms.length > 0) {
 			context.github.issues.createComment(isUnfriendlyComment);
 		};
 
