@@ -87,37 +87,13 @@ module.exports = app => {
             };
         });
 
-        // TODO: uncomment
-        // const guidanceComment = formatComment(allExtractedTerms);
-
-        var wordsFound = [];
-        var linesFound = [];
-
-        allExtractedTerms.forEach((result, i) => {
-            wordsFound = wordsFound.concat(
-                allExtractedTerms[i].map(function(el) {
-                   return el.word;
-                })
-            );
-
-            linesFound = linesFound.concat(
-                allExtractedTerms[i].map(function(el) {
-    			    return el.line;
-                })
-            );
-        });
-
-		const guidanceComment = context.issue({
-			body: `# Inclusive Language Report\n This PR contains some words that are considered problematic, you should try using an alternative term instead for more inclusive language. [Here\'s why.](https://confluence.expedia.biz/pages/viewpage.action?pageId=1607388080)\n
-			The following terms were found: ${wordsFound}
-			These terms were found on the following lines: ${linesFound}`,
-		});
+        // Generate formatted comment for PR response
+        const guidanceComment = formatComment(allExtractedTerms);
 
 		if (allExtractedTerms.length > 0 && !context.isBot) {
-			// context.github.issues.createComment(
-            //     context.issue({body: guidanceComment})
-            // );
-            context.github.issues.createComment(guidanceComment);
+			context.github.issues.createComment(
+                context.issue({body: guidanceComment})
+            );
 		};
   })
 }

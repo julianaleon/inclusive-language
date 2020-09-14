@@ -18,12 +18,13 @@
     "test": "jest"
   },
   "dependencies": {
+    "@octokit/rest": "^18.0.5",
     "probot": "^10.1.0"
   },
   "devDependencies": {
     "jest": "^26.4.0",
     "nock": "^13.0.4",
-    "smee-client": "^1.1.0"
+    "smee-client": "^1.2.2"
   },
   "engines": {
     "node": ">= 10.13.0"
