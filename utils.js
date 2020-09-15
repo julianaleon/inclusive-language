@@ -1,37 +1,38 @@
+const prohibitedTerms = require('./prohibitedTerms');
+
 function formatRow(term) {
 	let status = `:warning:`
-	// if (term.level === 'severe') {
-	// 	status = `:stop_sign:`
-	// }
+	if (prohibitedTerms[term.word].severity === 'severe') {
+		status = `:stop_sign:`
+	}
 
-    // find alternative term
-    const alternative = 'test';
-    console.log('row term:',term);
+    // Get alternative term
+    const alternative = prohibitedTerms[term.word].alternative;
 
-	return `| ${status} | ${term.word} | ${alternative} |`;
+	return `| ${status} | ${term.word} | ${alternative} | ${term.line}|`;
 }
 
-function formatFileTable(res) {
-	// Don't post anything for files that do not contain prohibitted terms
-	if (res.length === 0) {
+function formatFileTable(result) {
+	// Don't post anything for files that do not contain prohibited terms
+	if (result.length === 0) {
 		return '';
 	}
 
-	// let filePath = path.relative(process.cwd(), res.filePath)
-	// let header = `### ${filePath}\n`
-	let tableHeader = `| Level | Word | Alternative |\n| :---: | :---: | :--- |\n`;
+	let fileName = result.filename;
+	let header = `### File: ${fileName}\n`;
+	let tableHeader = `| Severity | Term | Alternative | Included in line |\n| :---: | :--- | :--- | :--- |\n`;
 
-    let rows = res.map(el => formatRow(el));
+    let rows = result.map(el => formatRow(el));
 
-	return `${tableHeader}${rows.join('\n')}\n`;
+	return `${header}${tableHeader}${rows.join('\n')}\n`;
 }
 
 // Formats comment that will be posted on the PR
 function formatComment(checkRes) {
-	let header = `# Inclusive Language Report\n This PR contains some words that are considered problematic, you should try using an alternative term instead for more inclusive language. [Here\'s why.](https://confluence.expedia.biz/pages/viewpage.action?pageId=1607388080)\n`;
+	let header = `# Inclusive Language Report\n This PR contains some terms that are considered problematic, you should try using an alternative term instead for more inclusive language. [Here\'s why.](https://confluence.expedia.biz/pages/viewpage.action?pageId=1607388080)\n`;
 	let success = `### :sparkles: :rocket: :sparkles: Nothing to Report :sparkles: :rocket: :sparkles:`;
 
-	let sections = checkRes.map(res => formatFileTable(res));
+	let sections = checkRes.map(result => formatFileTable(result));
 
 	if (sections.every(section => section === '') || sections.length == 0) {
 		return `${success}`

@@ -1,4 +1,4 @@
-const prohibittedTerms = require('./prohibittedTerms');
+const prohibitedTerms = require('./prohibitedTerms');
 const { Octokit } = require("@octokit/rest");
 const { formatComment } = require("./utils");
 
@@ -52,15 +52,14 @@ module.exports = app => {
 			return line.substring(1);
 		};
 
-        // Determines if term from the prohibittedTerms list is included in the new file additions
+        // Determines if term from the prohibitedTerms list is included in the new file additions
 		var extractTermsFromFile = (extractedTerms, line) => {
-			for (const term of prohibittedTerms) {
+			for (const term of Object.keys(prohibitedTerms)) {
 				if (line.includes(term)) {
 					extractedTerms.push({
 						word: term,
 						line: line,
-						index: line.indexOf(term),
-						count: extractedTerms.length
+						index: line.indexOf(term)
 					});
 				}
 			}
@@ -79,10 +78,10 @@ module.exports = app => {
     			.map(removeFirstPlus)
     			.reduce(extractTermsFromFile, []);
 
-            console.log(result);
-
-            // If prohibitted terms found in file, add the results to the total array
+            // If prohibited terms found in file, add the results to the total array
             if (result) {
+                // Adds the name of the file the extracted term was found in
+                result.filename = files.data[i].filename;
                 allExtractedTerms.push(result);
             };
         });

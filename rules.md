@@ -2,10 +2,12 @@
 
 Lists non-inclusive terms and proposed inclusive alternatives.
 
-| id | type | Terms | Alternative |
+Severity levels are either `warn` or `severe`.
+
+| key | Severity | Term | Alternative |
 | - | - | - | - |
-| `whitelist` | severe | `whitelist`, `whitelisted` | `allowlist` |
-| `blacklist` | severe | `blacklist`, `blacklisted` | `denylist` |
-| `master` | severe | `master` | `primary` |
-| `slave` | severe | `slave` | `secondary`|
-| `brownbag` | severe | `brownbag` | `lunch and learn`|
+| `whitelist` | warn | `whitelist` | `allowlist` |
+| `blacklist` | warn | `blacklist` | `denylist` |
+| `master` | warn | `master` | `primary` |
+| `slave` | warn | `slave` | `secondary`|
+| `brownbag` | warn | `brownbag` | `lunch and learn`|
