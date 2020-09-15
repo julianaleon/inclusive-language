@@ -1,6 +1,12 @@
 # inclusive-language
+An inclusive language GitHub App that helps you remove offensive language from your code.
 
-> A GitHub App built with [Probot](https://github.com/probot/probot) that An inclusive language GitHub App that helps you remove offensive language from your code.
+Once installed to a repository, this app will leave comments on new Pull Requests to notify the users that there are terms in newly added code that does not meet our inclusive language guidelines.
+
+See the [rules.md](rules.md) for terms that this app considers prohibited.
+
+## Example PR Comment
+![Recommended Changes](assets/comment-example.png "Recommended Changes")
 
 ## Setup
 

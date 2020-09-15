@@ -68,10 +68,10 @@ module.exports = app => {
 
         // Iterate over each file changed in PR
         files.data.forEach((file, i) => {
-            console.log(
-                files.data[i],
-                '******** File',i,'data ********'
-            );
+            // console.log(
+            //     files.data[i],
+            //     '******** File',i,'data ********'
+            // );
 
             var result = checkCommit(i)
     			.filter(onlyAddedLines)
