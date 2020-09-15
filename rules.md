@@ -10,4 +10,4 @@ Severity levels are either `warn` or `severe`.
 | `blacklist` | warn | blacklist | denylist |
 | `master` | warn | master | primary |
 | `slave` | warn | slave | secondary |
-| `brownbag` | warn | `brownbag | lunch and learn |
+| `brownbag` | warn | brownbag | lunch and learn |
