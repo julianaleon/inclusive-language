@@ -21,11 +21,6 @@ module.exports = app => {
   })
 
   app.on(['pull_request.opened', 'pull_request.synchronize'], async context => {
-        // console.log(
-		// 	context.payload.pull_request.body,
-		// 	'****** payload body ******',
-		// );
-
     	const owner = context.payload.repository.owner.login;
     	const repo = context.payload.repository.name;
         const pull_number = context.payload.number;
@@ -39,21 +34,21 @@ module.exports = app => {
 
         const allExtractedTerms = [];
 
-        var checkCommit = index => {
+        let checkCommit = index => {
             return files.data[index].patch.split('\n');
         }
 
         // Only look for new code additions to the file
-		var onlyAddedLines = line => {
+		let onlyAddedLines = line => {
 			return line.startsWith('+');
 		};
 
-		var removeFirstPlus = line => {
+		let removeFirstPlus = line => {
 			return line.substring(1);
 		};
 
         // Determines if term from the prohibitedTerms list is included in the new file additions
-		var extractTermsFromFile = (extractedTerms, line) => {
+		let extractTermsFromFile = (extractedTerms, line) => {
 			for (const term of Object.keys(prohibitedTerms)) {
 				if (line.includes(term)) {
 					extractedTerms.push({
@@ -73,7 +68,7 @@ module.exports = app => {
             //     '******** File',i,'data ********'
             // );
 
-            var result = checkCommit(i)
+            let result = checkCommit(i)
     			.filter(onlyAddedLines)
     			.map(removeFirstPlus)
     			.reduce(extractTermsFromFile, []);

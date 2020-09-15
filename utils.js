@@ -18,9 +18,9 @@ function formatFileTable(result) {
 		return '';
 	}
 
+	const tableHeader = `| Severity | Term | Alternative | Included in line |\n| :---: | :--- | :--- | :--- |\n`;
 	let fileName = result.filename;
 	let header = `### File: ${fileName}\n`;
-	let tableHeader = `| Severity | Term | Alternative | Included in line |\n| :---: | :--- | :--- | :--- |\n`;
 
     let rows = result.map(el => formatRow(el));
 
@@ -29,17 +29,11 @@ function formatFileTable(result) {
 
 // Formats comment that will be posted on the PR
 function formatComment(checkRes) {
-	let header = `# Inclusive Language Report\n This PR contains some terms that are considered problematic, you should try using an alternative term instead for more inclusive language. [Here\'s why.](https://confluence.expedia.biz/pages/viewpage.action?pageId=1607388080)\n`;
-	let success = `### :sparkles: :rocket: :sparkles: Nothing to Report :sparkles: :rocket: :sparkles:`;
+	const header = `# Inclusive Language Report\n This PR contains some terms that are considered problematic, you should try using an alternative term instead for more inclusive language. [Here\'s why.](https://confluence.expedia.biz/pages/viewpage.action?pageId=1607388080)\n`;
 
 	let sections = checkRes.map(result => formatFileTable(result));
 
-	if (sections.every(section => section === '') || sections.length == 0) {
-		return `${success}`
-	} else {
-		return `${header}${sections.join('\n')}`
-	}
-
+	return `${header}${sections.join('\n')}`
 }
 
 module.exports = {
