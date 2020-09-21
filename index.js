@@ -50,7 +50,7 @@ module.exports = app => {
         // Determines if term from the prohibitedTerms list is included in the new file additions
 		let extractTermsFromFile = (extractedTerms, line) => {
 			for (const term of Object.keys(prohibitedTerms)) {
-				if (line.includes(term)) {
+				if (line.toLowerCase().includes(term)) {
 					extractedTerms.push({
 						word: term,
 						line: line,
